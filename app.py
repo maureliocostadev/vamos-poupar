@@ -6,19 +6,16 @@ from datetime import datetime
 # -----------------------------
 # CONFIGURAÇÃO DA PÁGINA
 # -----------------------------
-st.set_page_config(
-    page_title="Vamos Poupar",
-    layout="wide",
-)
+st.set_page_config(page_title="Vamos Poupar", layout="wide")
 
 # -----------------------------
 # DADOS (MVP)
 # -----------------------------
 data = [
-    {"Nome": "Davi", "Janeiro": 0, "Fevereiro": 0, "Março": 0, "Abril": 0, "Maio": 0, "Junho": 0, "Julho": 0, "Agosto": 0, "Setembro": 0, "Outubro": 0, "Novembro": 0, "Dezembro": 0},    
-    {"Nome": "Delzuita", "Janeiro": 10, "Fevereiro": 0, "Março": 0, "Abril": 0, "Maio": 0, "Junho": 0, "Julho": 0, "Agosto": 0, "Setembro": 0, "Outubro": 0, "Novembro": 0, "Dezembro": 0},    
+    {"Nome": "Davi", "Janeiro": 0, "Fevereiro": 0, "Março": 0, "Abril": 0, "Maio": 0, "Junho": 0, "Julho": 0, "Agosto": 0, "Setembro": 0, "Outubro": 0, "Novembro": 0, "Dezembro": 0},
+    {"Nome": "Delzuita", "Janeiro": 10, "Fevereiro": 0, "Março": 0, "Abril": 0, "Maio": 0, "Junho": 0, "Julho": 0, "Agosto": 0, "Setembro": 0, "Outubro": 0, "Novembro": 0, "Dezembro": 0},
     {"Nome": "Edmundo", "Janeiro": 10, "Fevereiro": 0, "Março": 0, "Abril": 0, "Maio": 0, "Junho": 0, "Julho": 0, "Agosto": 0, "Setembro": 0, "Outubro": 0, "Novembro": 0, "Dezembro": 0},
-    {"Nome": "Fabiana", "Janeiro": 10, "Fevereiro": 0, "Março": 0, "Abril": 0, "Maio": 0, "Junho": 0, "Julho": 0, "Agosto": 0, "Setembro": 0, "Outubro": 0, "Novembro": 0, "Dezembro": 0},        
+    {"Nome": "Fabiana", "Janeiro": 10, "Fevereiro": 0, "Março": 0, "Abril": 0, "Maio": 0, "Junho": 0, "Julho": 0, "Agosto": 0, "Setembro": 0, "Outubro": 0, "Novembro": 0, "Dezembro": 0},
     {"Nome": "Marcos", "Janeiro": 10, "Fevereiro": 0, "Março": 0, "Abril": 0, "Maio": 0, "Junho": 0, "Julho": 0, "Agosto": 0, "Setembro": 0, "Outubro": 0, "Novembro": 0, "Dezembro": 0},
     {"Nome": "Kellianny", "Janeiro": 10, "Fevereiro": 0, "Março": 0, "Abril": 0, "Maio": 0, "Junho": 0, "Julho": 0, "Agosto": 0, "Setembro": 0, "Outubro": 0, "Novembro": 0, "Dezembro": 0},
     {"Nome": "Maria Socorro", "Janeiro": 10, "Fevereiro": 0, "Março": 0, "Abril": 0, "Maio": 0, "Junho": 0, "Julho": 0, "Agosto": 0, "Setembro": 0, "Outubro": 0, "Novembro": 0, "Dezembro": 0},
@@ -28,29 +25,25 @@ data = [
 
 df = pd.DataFrame(data)
 
-for month in df.loc[:, "Janeiro":"Dezembro"].columns:
-    df[month] = pd.to_numeric(df[month], errors='coerce').fillna(0).astype(np.float64)
+meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+         "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"]
 
-for month in df.loc[:, "Janeiro":"Dezembro"].columns:
-    df["status_" + month] = df[month].apply(lambda x: "Pago" if x > 0 else "Pendente")
-
-df["Status"] = df["status_Janeiro"]
+# Garantir numérico
+for m in meses:
+    df[m] = pd.to_numeric(df[m], errors="coerce").fillna(0).astype(float)
 
 # -----------------------------
-# MÉTRICAS
+# TRANSFORMA EM FORMATO LONGO (melhor p/ filtro)
 # -----------------------------
-total_integrantes = len(df)
-pagos = (df["Status"] == "Pago").sum()
-pendentes = (df["Status"] == "Pendente").sum()
+df_long = df.melt(
+    id_vars=["Nome"],
+    value_vars=meses,
+    var_name="Mês",
+    value_name="Valor",
+)
 
-total_arrecadado_mes = []
-for month in df.loc[:, "Janeiro":"Dezembro"].columns:
-    total_arrecadado_mes.append(df[month].sum())
-
-total_arrecadado = np.sum(total_arrecadado_mes)
-
-# Progresso do desafio (Janeiro pago = 4 semanas de 52)
-progresso = 4 / 52
+df_long["Status"] = np.where(df_long["Valor"] > 0, "Pago", "Pendente")
+df_long["StatusIcon"] = np.where(df_long["Status"] == "Pago", "✅ Pago", "❌ Pendente")
 
 # -----------------------------
 # TÍTULO
@@ -59,59 +52,90 @@ st.title("💰 Desafio das 52 Semanas – Vamos Poupar")
 st.caption("Pouquinho por semana, resultado grande no final")
 
 # -----------------------------
-# CARDS
+# FILTROS (globais da página)
 # -----------------------------
+st.subheader("🔎 Filtros")
+c1, c2 = st.columns(2)
+
+with c1:
+    filtro_pessoa = st.selectbox(
+        "Filtrar por pessoa",
+        options=["Todos"] + sorted(df_long["Nome"].unique().tolist())
+    )
+
+with c2:
+    filtro_mes = st.selectbox(
+        "Filtrar por mês",
+        options=["Todos"] + meses
+    )
+
+df_f = df_long.copy()
+
+if filtro_pessoa != "Todos":
+    df_f = df_f[df_f["Nome"] == filtro_pessoa]
+
+if filtro_mes != "Todos":
+    df_f = df_f[df_f["Mês"] == filtro_mes]
+
+# -----------------------------
+# MÉTRICAS (baseadas no filtro)
+# -----------------------------
+total_integrantes = df_f["Nome"].nunique()
+pagos = (df_f["Status"] == "Pago").sum()
+pendentes = (df_f["Status"] == "Pendente").sum()
+total_arrecadado = df_f["Valor"].sum()
+
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
-    st.metric("💰 Total acumulado", f"R$ {total_arrecadado:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
+    st.metric("💰 Total (filtro)", f"R$ {total_arrecadado:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
 
 with col2:
-    st.metric("👥 Integrantes", total_integrantes)
+    st.metric("👥 Integrantes (filtro)", total_integrantes)
 
 with col3:
-    st.metric("✅ Pagamentos em dia", pagos)
+    st.metric("✅ Pagos (filtro)", pagos)
 
 with col4:
-    st.metric("⚠️ Pendentes", pendentes)
+    st.metric("⚠️ Pendentes (filtro)", pendentes)
 
 # -----------------------------
-# PROGRESSO
+# PROGRESSO (mantive seu fixo)
 # -----------------------------
+progresso = 4 / 52
 st.subheader("📈 Progresso do desafio")
 st.progress(progresso)
 st.caption(f"{int(progresso * 100)}% concluído do desafio anual")
 
 # -----------------------------
-# FILTROS
+# TABELA
 # -----------------------------
-st.subheader("📋 Controle de pagamentos")
-filtro_status = st.selectbox("Filtrar por status", ["Todos", "Pago", "Pendente"])
+st.subheader("📋 Controle de pagamentos (filtrado)")
 
-if filtro_status != "Todos":
-    df_filtrado = df[df["Status"] == filtro_status]
-else:
-    df_filtrado = df.copy()
-
-# Ícones de status
-def status_icon(status):
-    return "✅ Pago" if status == "Pago" else "❌ Pendente"
-
-df_filtrado["Status"] = df_filtrado["Status"].apply(status_icon)
-
-st.dataframe(df_filtrado, use_container_width=True)
+tabela = df_f[["Nome", "Mês", "Valor", "StatusIcon"]].rename(columns={"StatusIcon": "Status"})
+st.dataframe(tabela, use_container_width=True, hide_index=True)
 
 # -----------------------------
-# GRÁFICO
+# GRÁFICO (filtrado)
 # -----------------------------
-st.subheader("📊 Arrecadação por mês (MVP)")
+st.subheader("📊 Arrecadação por mês (filtrado)")
 
-grafico_df = pd.DataFrame({
-    "Mês": ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"],
-    "Valor": total_arrecadado_mes
-})
+import plotly.express as px
 
-st.bar_chart(grafico_df.set_index("Mês"))
+grafico_df = (
+    df_f.groupby("Mês", as_index=False)["Valor"].sum()
+)
+
+fig = px.bar(
+    grafico_df,
+    x="Mês",
+    y="Valor",
+    category_orders={"Mês": meses},
+    text_auto=True
+)
+
+st.plotly_chart(fig, use_container_width=True)
+
 
 # -----------------------------
 # RODAPÉ
