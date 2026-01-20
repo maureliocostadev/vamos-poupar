@@ -180,15 +180,15 @@ st.subheader("💳 Mercado Pago – Saldo e rendimento (geral do grupo)")
 
 c_mp1, c_mp2 = st.columns([1, 2])
 
-with c_mp1:
-    saldo_atual_mp = st.number_input(
-        "Saldo atual no Mercado Pago (R$)",
-        min_value=0.0,
-        value=0.0,
-        step=10.0,
-        help="Digite o valor atual que aparece na sua conta Mercado Pago.",
-    )
-
+# with c_mp1:
+#     saldo_atual_mp = st.number_input(
+#         "Saldo atual no Mercado Pago (R$)",
+#         min_value=0.0,
+#         value=0.0,
+#         step=10.0,
+#         help="Digite o valor atual que aparece na sua conta Mercado Pago.",
+#     )
+saldo_atual_mp = 80.31
 # Total aportado por pessoa e geral (NÃO depende dos filtros)
 aporte_por_pessoa = df[["Nome"] + meses].copy()
 aporte_por_pessoa["Aporte_Total"] = aporte_por_pessoa[meses].sum(axis=1)
