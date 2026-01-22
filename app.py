@@ -113,7 +113,8 @@ data = [
 ]
 
 df = pd.DataFrame(data)
-
+st.write("Dados carregados com sucesso.")
+st.write(df)
 meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
          "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"]
 
@@ -309,7 +310,46 @@ st.progress(progresso)
 st.caption(f"{int(progresso * 100)}% concluído do desafio anual")
 
 
+st.divider()
+st.subheader("Aporte para os meses seguintes")
+col1, col2, col3, col4 = st.columns(4)
 
+with col1:
+    st.metric("🗓️ Janeiro", "R$ 10,00")
+with col2:
+    st.metric("🗓️ Fevereiro", "R$ 45,00")
+with col3:
+    st.metric("🗓️ Março", "R$ 65,00")
+with col4:
+    st.metric("🗓️ Abril", "R$ 90,00")
+    
+    
+# with col1:
+#     st.metric("🗓️ Maio", "R$ 90,00")
+# with col2:
+#     st.metric("🗓️ Junho", "R$ 106,00")
+# with col3:
+#     st.metric("🗓️ Julho", "R$ 122,00")
+# with col4:
+#     st.metric("🗓️ Agosto", "R$ 138,00")
+    
+    
+# with col1:
+#     st.metric("🗓️ Setembro", "R$ 154,00")
+# with col2:
+#     st.metric("🗓️ Outubro", "R$ 170,00")
+# with col3:
+#     st.metric("🗓️ Novembro", "R$ 186,00")
+# with col4:
+#     st.metric("🗓️ Dezembro", "R$ 202,00")
+
+# colocar o PIX aqui
+st.subheader("💳 PIX para os meses seguintes")
+st.write("Chave PIX: (47)99618-1477)")
+st.write("Nome: Marcos Aurélio Araujo Costa")
+
+
+st.divider()
 # -----------------------------
 # TABELA
 # -----------------------------
