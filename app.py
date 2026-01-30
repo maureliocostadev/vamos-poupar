@@ -189,7 +189,7 @@ c_mp1, c_mp2 = st.columns([1, 2])
 #         step=10.0,
 #         help="Digite o valor atual que aparece na sua conta Mercado Pago.",
 #     )
-saldo_atual_mp = 80.31
+saldo_atual_mp = 80.66
 # Total aportado por pessoa e geral (NÃO depende dos filtros)
 aporte_por_pessoa = df[["Nome"] + meses].copy()
 aporte_por_pessoa["Aporte_Total"] = aporte_por_pessoa[meses].sum(axis=1)
@@ -317,11 +317,11 @@ col1, col2, col3, col4 = st.columns(4)
 with col1:
     st.metric("🗓️ Janeiro", "R$ 10,00")
 with col2:
-    st.metric("🗓️ Fevereiro", "R$ 45,00")
+    st.metric("🗓️ Fevereiro", "R$ 26,00")
 with col3:
-    st.metric("🗓️ Março", "R$ 65,00")
+    st.metric("🗓️ Março", "R$ 55,00")
 with col4:
-    st.metric("🗓️ Abril", "R$ 90,00")
+    st.metric("🗓️ Abril", "R$ 62,00")
     
     
 # with col1:
