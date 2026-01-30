@@ -280,14 +280,14 @@ with col3:
             pass
            # st.metric("✅ Pagos", pagos)
         else:
-            st.metric("✅ Pagos (filtro)", meses pagos)
+            st.metric("✅ Total Meses Pagos (filtro)", pagos)
 
 with col4:
         if filtro_pessoa == "Todos":
             pass
           #  st.metric("⚠️ Pendentes", pendentes)
         else:
-            st.metric("⚠️ Pendentes (filtro)", meses pendentes)
+            st.metric("⚠️ Total Meses Pendentes (filtro)", pendentes)
 
 # -----------------------------
 # PROGRESSO (mantive seu fixo)
