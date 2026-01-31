@@ -353,9 +353,9 @@ with col4:
 #     st.metric("🗓️ Dezembro", "R$ 202,00")
 
 # colocar o PIX aqui
-st.subheader("💳 PIX para os meses seguintes")
-st.write("Chave PIX: (47)99618-1477)")
-st.write("Nome: Marcos Aurélio Araujo Costa")
+# st.subheader("💳 PIX para os meses seguintes")
+# st.write("Chave PIX: (47)99618-1477)")
+# st.write("Nome: Marcos Aurélio Araujo Costa")
 
 
 st.divider()
