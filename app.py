@@ -114,8 +114,8 @@ data = [
 ]
 
 df = pd.DataFrame(data)
-st.write("Dados carregados com sucesso.")
-st.write(df)
+# st.write("Dados carregados com sucesso.")
+# st.write(df)
 meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
          "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"]
 
