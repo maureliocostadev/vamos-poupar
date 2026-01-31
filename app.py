@@ -308,10 +308,9 @@ progresso = semana_atual / 52
 
 
 
-st.subheader("📈 Progresso do desafio")
+st.subheader("📈 Progresso do desafio ")
 st.progress(progresso)
-st.caption(f"{int(progresso * 100)}% concluído do desafio anual")
-st.caption(f'Estamos na semana {semana_atual}.')
+st.caption(f"Estamos na semana {semana_atual} e {int(progresso * 100)} % concluído do desafio anual")
 
 st.divider()
 st.subheader("Aporte para os meses seguintes")
