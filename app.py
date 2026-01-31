@@ -173,6 +173,18 @@ st.markdown('</div></div>', unsafe_allow_html=True)
 filtro_pessoa = st.session_state.filtro_pessoa
 
 
+# -----------------------------
+# PROGRESSO BASEADO NA DATA ATUAL (52 semanas)
+# -----------------------------
+hoje = datetime.now().date()
+
+# Semana ISO do ano (pode chegar a 53 em alguns anos)
+semana_atual = hoje.isocalendar().week
+
+# Garantir que o progresso fique entre 1 e 52
+semana_atual = max(1, min(52, semana_atual))
+
+
 
 # -----------------------------
 # SALDO MERCADO PAGO (MANUAL) + RENDIMENTO (GERAL DO GRUPO)
@@ -214,7 +226,7 @@ else:
 aporte_por_pessoa["Saldo (Aporte+Rend)"] = aporte_por_pessoa["Aporte_Total"] + aporte_por_pessoa["Rendimento"]
 
 # Cards (gerais do grupo)
-c1, c2, c3 = st.columns(3)
+c1, c2, c3, c4 = st.columns(4)
 with c1:
     st.metric(
         "💰 Total aportado (geral)",
@@ -230,6 +242,12 @@ with c3:
         "📈 Rendimento total (geral)",
         f"R$ {rendimento_total:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
     )
+    
+with c4:
+    st.metric(
+        " Semana Atual",
+        f"{semana_atual}/52".replace(",", "X").replace(".", ",").replace("X", ".")
+    )    
 
 st.divider()
 # -----------------------------
@@ -293,17 +311,6 @@ with col4:
 # -----------------------------
 # PROGRESSO (mantive seu fixo)
 # -----------------------------
-# -----------------------------
-# PROGRESSO BASEADO NA DATA ATUAL (52 semanas)
-# -----------------------------
-hoje = datetime.now().date()
-
-# Semana ISO do ano (pode chegar a 53 em alguns anos)
-semana_atual = hoje.isocalendar().week
-
-# Garantir que o progresso fique entre 1 e 52
-semana_atual = max(1, min(52, semana_atual))
-
 progresso = semana_atual / 52
 
 
