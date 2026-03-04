@@ -96,14 +96,14 @@ st.markdown("""
 
 
 
-saldo_atual_mp = 694.77
+saldo_atual_mp = 804.77
 # -----------------------------
 # DADOS (MVP)
 # -----------------------------
 data = [
     {"Nome": "Davi", "Janeiro": 10, "Fevereiro": 26, "Março": 0, "Abril": 0, "Maio": 0, "Junho": 0, "Julho": 0, "Agosto": 0, "Setembro": 0, "Outubro": 0, "Novembro": 0, "Dezembro": 0},
-    {"Nome": "Delzuita", "Janeiro": 10, "Fevereiro": 26, "Março": 0, "Abril": 0, "Maio": 0, "Junho": 0, "Julho": 0, "Agosto": 0, "Setembro": 0, "Outubro": 0, "Novembro": 0, "Dezembro": 0},
-    {"Nome": "Edmundo", "Janeiro": 10, "Fevereiro": 26, "Março": 0, "Abril": 0, "Maio": 0, "Junho": 0, "Julho": 0, "Agosto": 0, "Setembro": 0, "Outubro": 0, "Novembro": 0, "Dezembro": 0},
+    {"Nome": "Delzuita", "Janeiro": 10, "Fevereiro": 26, "Março": 55, "Abril": 0, "Maio": 0, "Junho": 0, "Julho": 0, "Agosto": 0, "Setembro": 0, "Outubro": 0, "Novembro": 0, "Dezembro": 0},
+    {"Nome": "Edmundo", "Janeiro": 10, "Fevereiro": 26, "Março": 55, "Abril": 0, "Maio": 0, "Junho": 0, "Julho": 0, "Agosto": 0, "Setembro": 0, "Outubro": 0, "Novembro": 0, "Dezembro": 0},
     {"Nome": "Fabiana", "Janeiro": 10, "Fevereiro": 26, "Março": 0, "Abril": 0, "Maio": 0, "Junho": 0, "Julho": 0, "Agosto": 0, "Setembro": 0, "Outubro": 0, "Novembro": 0, "Dezembro": 0},
     {"Nome": "Marcos", "Janeiro": 10, "Fevereiro": 26, "Março": 55, "Abril": 0, "Maio": 0, "Junho": 0, "Julho": 0, "Agosto": 0, "Setembro": 0, "Outubro": 0, "Novembro": 0, "Dezembro": 0},
     {"Nome": "Kellianny", "Janeiro": 10, "Fevereiro": 26, "Março": 55, "Abril": 0, "Maio": 0, "Junho": 0, "Julho": 0, "Agosto": 0, "Setembro": 0, "Outubro": 0, "Novembro": 0, "Dezembro": 0},
