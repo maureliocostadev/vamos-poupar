@@ -324,23 +324,23 @@ st.subheader("Aporte para os meses seguintes")
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
-    st.metric("🗓️ Janeiro", "R$ 10,00")
+    st.metric("🗓️ março", "R$ 55,00")
 with col2:
-    st.metric("🗓️ Fevereiro", "R$ 26,00")
+    st.metric("🗓️ Abril", "R$ 82,00")
 with col3:
-    st.metric("🗓️ Março", "R$ 55,00")
+    st.metric("🗓️ Maio", "R$ 100,00")
 with col4:
-    st.metric("🗓️ Abril", "R$ 62,00")
+    st.metric("🗓️ Junho", "R$ 120,00")
     
     
 # with col1:
-#     st.metric("🗓️ Maio", "R$ 90,00")
+#     st.metric("🗓️ Maio", "R$ 100,00")
 # with col2:
-#     st.metric("🗓️ Junho", "R$ 106,00")
+#     st.metric("🗓️ Junho", "R$ 120,00")
 # with col3:
-#     st.metric("🗓️ Julho", "R$ 122,00")
+#     st.metric("🗓️ Julho", "R$ 133,00")
 # with col4:
-#     st.metric("🗓️ Agosto", "R$ 138,00")
+#     st.metric("🗓️ Agosto", "R$ 140,00")
     
     
 # with col1:
