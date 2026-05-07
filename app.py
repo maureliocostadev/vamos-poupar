@@ -4,7 +4,7 @@ import numpy as np
 from datetime import datetime
 
 
-saldo_atual_mp = 1584.57
+saldo_atual_mp = 1763.45
 # -----------------------------
 # CONFIGURAÇÃO DA PÁGINA
 # -----------------------------
