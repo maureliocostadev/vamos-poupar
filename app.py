@@ -4,7 +4,7 @@ import numpy as np
 from datetime import datetime
 
 
-saldo_atual_mp = 2467.59
+saldo_atual_mp = 2776.35
 # -----------------------------
 # CONFIGURAÇÃO DA PÁGINA
 # -----------------------------
@@ -108,9 +108,9 @@ data = [
     {"Nome": "Marcos", "Janeiro": 10, "Fevereiro": 26, "Março": 55, "Abril": 82, "Maio": 100, "Junho": 0, "Julho": 0, "Agosto": 0, "Setembro": 0, "Outubro": 0, "Novembro": 0, "Dezembro": 0},
     {"Nome": "Kellianny", "Janeiro": 10, "Fevereiro": 26, "Março": 55, "Abril": 82, "Maio": 100, "Junho": 0, "Julho": 0, "Agosto": 0, "Setembro": 0, "Outubro": 0, "Novembro": 0, "Dezembro": 0},
     {"Nome": "Maria Socorro", "Janeiro": 10, "Fevereiro": 26, "Março": 55, "Abril": 82, "Maio": 100, "Junho": 0, "Julho": 0, "Agosto": 0, "Setembro": 0, "Outubro": 0, "Novembro": 0, "Dezembro": 0},
-    {"Nome": "Marisa", "Janeiro": 10, "Fevereiro": 26, "Março": 55, "Abril": 82, "Maio": 0, "Junho": 0, "Julho": 0, "Agosto": 0, "Setembro": 0, "Outubro": 0, "Novembro": 0, "Dezembro": 0},
-    {"Nome": "João Vitor", "Janeiro": 10, "Fevereiro": 26, "Março": 55, "Abril": 82, "Maio": 0, "Junho": 0, "Julho": 0, "Agosto": 0, "Setembro": 0, "Outubro": 0, "Novembro": 0, "Dezembro": 0},
-    {"Nome": "Katarine", "Janeiro": 10, "Fevereiro": 26, "Março": 55, "Abril": 82, "Maio": 0, "Junho": 0, "Julho": 0, "Agosto": 0, "Setembro": 0, "Outubro": 0, "Novembro": 0, "Dezembro": 0},
+    {"Nome": "Marisa", "Janeiro": 10, "Fevereiro": 26, "Março": 55, "Abril": 82, "Maio": 100, "Junho": 0, "Julho": 0, "Agosto": 0, "Setembro": 0, "Outubro": 0, "Novembro": 0, "Dezembro": 0},
+    {"Nome": "João Vitor", "Janeiro": 10, "Fevereiro": 26, "Março": 55, "Abril": 82, "Maio": 100, "Junho": 0, "Julho": 0, "Agosto": 0, "Setembro": 0, "Outubro": 0, "Novembro": 0, "Dezembro": 0},
+    {"Nome": "Katarine", "Janeiro": 10, "Fevereiro": 26, "Março": 55, "Abril": 82, "Maio": 100, "Junho": 0, "Julho": 0, "Agosto": 0, "Setembro": 0, "Outubro": 0, "Novembro": 0, "Dezembro": 0},
 ]
 
 df = pd.DataFrame(data)
