@@ -326,13 +326,13 @@ col1, col2, col3, col4 = st.columns(4)
 #with col1:
   #  st.metric("🗓️ março", "R$ 55,00")
 with col1:
-    st.metric("🗓️ Abril", "R$ 82,00")
-with col2:
-    st.metric("🗓️ Maio", "R$ 100,00")
-with col3:
     st.metric("🗓️ Junho", "R$ 120,00")
-with col4:
+with col2:
     st.metric("🗓️ Julho", "R$ 133,00")
+with col3:
+    st.metric("🗓️ Agosto", "R$ 140,00")
+with col4:
+    st.metric("🗓️ Setembro", "R$ 154,00")
     
     
 # with col1:
