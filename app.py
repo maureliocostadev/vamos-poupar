@@ -224,7 +224,7 @@ st.markdown('<p class="section-copy">Saldo, aportes e andamento do desafio em um
 
 c1, c2, c3, c4 = st.columns(4)
 c1.metric("Total aportado", moeda(total_aportado))
-c2.metric("Saldo no Mercado Pago", moeda(saldo_atual_mp))
+c2.metric("Saldo", moeda(saldo_atual_mp))
 c3.metric("Rendimento", moeda(rendimento))
 c4.metric("Semana atual", f"{semana_atual} de 52")
 
@@ -244,6 +244,11 @@ st.markdown(
 st.markdown('<div class="section-title">Próximos aportes</div>', unsafe_allow_html=True)
 st.markdown('<p class="section-copy">Valores planejados para manter o grupo no ritmo.</p>', unsafe_allow_html=True)
 proximos_aportes = [
+    ("Janeiro", 10),
+    ("Fevereiro", 26),
+    ("Março", 55),
+    ("Abril", 82),
+    ("Maio", 90),
     ("Junho", 120),
     ("Julho", 133),
     ("Agosto", 140),
