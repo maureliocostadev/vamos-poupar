@@ -1,10 +1,17 @@
 from datetime import datetime
+from io import BytesIO
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import plotly.express as px
 import streamlit as st
+from reportlab.lib import colors
+from reportlab.lib.enums import TA_CENTER
+from reportlab.lib.pagesizes import A4, landscape
+from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+from reportlab.lib.units import cm
+from reportlab.platypus import KeepTogether, PageBreak, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 
 
 st.set_page_config(
@@ -158,6 +165,176 @@ def moeda(valor: float) -> str:
     return f"R$ {valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
 
+def gerar_relatorio_pdf(
+    dados: pd.DataFrame,
+    titulo: str,
+    total_grupo: float,
+    saldo_atual: float,
+    rendimento_atual: float,
+    semana: int,
+) -> bytes:
+    buffer = BytesIO()
+    documento = SimpleDocTemplate(
+        buffer,
+        pagesize=landscape(A4),
+        rightMargin=1.2 * cm,
+        leftMargin=1.2 * cm,
+        topMargin=1.2 * cm,
+        bottomMargin=1.2 * cm,
+        title=titulo,
+        author="Vamos Poupar",
+    )
+    estilos = getSampleStyleSheet()
+    titulo_estilo = ParagraphStyle(
+        "TituloRelatorio",
+        parent=estilos["Title"],
+        alignment=TA_CENTER,
+        textColor=colors.HexColor("#0F5132"),
+        fontSize=20,
+        spaceAfter=8,
+    )
+    elementos = [
+        Paragraph("Vamos Poupar — Relatório de pagamentos", titulo_estilo),
+        Paragraph(
+            f"Gerado em {datetime.now():%d/%m/%Y às %H:%M}",
+            estilos["BodyText"],
+        ),
+        Spacer(1, 0.5 * cm),
+        Paragraph("Visão geral do grupo", estilos["Heading2"]),
+    ]
+
+    resumo_geral = Table(
+        [
+            ["Total aportado", "Saldo no Mercado Pago", "Rendimento", "Semana atual"],
+            [moeda(total_grupo), moeda(saldo_atual), moeda(rendimento_atual), f"{semana} de 52"],
+        ],
+        colWidths=[6 * cm] * 4,
+    )
+    resumo_geral.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#EAF6EF")),
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.HexColor("#66756E")),
+        ("TEXTCOLOR", (0, 1), (-1, 1), colors.HexColor("#173126")),
+        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+        ("FONTNAME", (0, 1), (-1, 1), "Helvetica-Bold"),
+        ("FONTSIZE", (0, 0), (-1, 0), 9),
+        ("FONTSIZE", (0, 1), (-1, 1), 14),
+        ("BOX", (0, 0), (-1, -1), 0.6, colors.HexColor("#DCE8E1")),
+        ("INNERGRID", (0, 0), (-1, -1), 0.4, colors.HexColor("#DCE8E1")),
+        ("TOPPADDING", (0, 0), (-1, -1), 8),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 8),
+        ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+    ]))
+    elementos.extend([
+        resumo_geral,
+        Spacer(1, 0.25 * cm),
+        Paragraph(f"Progresso anual: <b>{semana / 52:.0%} concluído</b>", estilos["BodyText"]),
+        Spacer(1, 0.45 * cm),
+        Paragraph(titulo, estilos["Heading2"]),
+    ])
+
+    total_selecao = float(dados["Valor"].sum())
+    pagos_selecao = int(dados["Situação"].astype(str).str.contains("Pago").sum())
+    pendentes_selecao = len(dados) - pagos_selecao
+    resumo_selecao = Table(
+        [["Total aportado", "Meses pagos", "Meses pendentes"], [moeda(total_selecao), pagos_selecao, pendentes_selecao]],
+        colWidths=[8 * cm] * 3,
+    )
+    resumo_selecao.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#EAF6EF")),
+        ("FONTNAME", (0, 0), (-1, -1), "Helvetica-Bold"),
+        ("GRID", (0, 0), (-1, -1), 0.4, colors.HexColor("#DCE8E1")),
+        ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+        ("TOPPADDING", (0, 0), (-1, -1), 6),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+    ]))
+    elementos.extend([resumo_selecao, Spacer(1, 0.4 * cm)])
+
+    mensal_pdf = dados.groupby("Mês", as_index=False)["Valor"].sum().set_index("Mês").reindex(MESES, fill_value=0)
+    meses_coluna_esquerda = MESES[:7]
+    meses_coluna_direita = MESES[7:]
+
+    def tabela_periodo(meses_periodo: list[str]) -> Table:
+        linhas_periodo = [["Mês", "Valor"]] + [
+            [mes, moeda(float(mensal_pdf.loc[mes, "Valor"]))]
+            for mes in meses_periodo
+        ]
+        tabela = Table(linhas_periodo, colWidths=[5.5 * cm, 5.5 * cm])
+        tabela.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#177245")),
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+        ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#EAF6EF")]),
+        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+        ("FONTSIZE", (0, 0), (-1, -1), 9),
+        ("GRID", (0, 0), (-1, -1), 0.4, colors.HexColor("#DCE8E1")),
+        ("ALIGN", (1, 1), (1, -1), "RIGHT"),
+        ("TOPPADDING", (0, 0), (-1, -1), 6),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+        ]))
+        return tabela
+
+    tabela_mensal = Table(
+        [[tabela_periodo(meses_coluna_esquerda), tabela_periodo(meses_coluna_direita)]],
+        colWidths=[11.7 * cm, 11.7 * cm],
+        hAlign="CENTER",
+    )
+    tabela_mensal.setStyle(TableStyle([
+        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ("LEFTPADDING", (0, 0), (-1, -1), 0),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 0),
+    ]))
+    elementos.extend([
+        Spacer(1, 0.3 * cm),
+        KeepTogether([
+            Paragraph("Arrecadação por mês", estilos["Heading2"]),
+            tabela_mensal,
+        ]),
+        PageBreak(),
+    ])
+
+    elementos.extend([Paragraph("Controle de pagamentos", estilos["Heading2"]), Spacer(1, 0.2 * cm)])
+
+    cabecalho = list(dados.columns)
+    linhas = [cabecalho]
+    for _, registro in dados.iterrows():
+        linhas.append([
+            moeda(float(valor)) if coluna == "Valor" else str(valor).replace("✅ ", "").replace("⏳ ", "")
+            for coluna, valor in registro.items()
+        ])
+
+    larguras = [6.2 * cm, 4.2 * cm, 4.2 * cm, 5.2 * cm] if "Nome" in cabecalho else [7 * cm, 6 * cm, 7 * cm]
+    tabela_pdf = Table(linhas, colWidths=larguras, repeatRows=1, hAlign="LEFT")
+    tabela_pdf.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#177245")),
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+        ("FONTNAME", (0, 1), (-1, -1), "Helvetica"),
+        ("FONTSIZE", (0, 0), (-1, -1), 9),
+        ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#EAF6EF")]),
+        ("GRID", (0, 0), (-1, -1), 0.4, colors.HexColor("#DCE8E1")),
+        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+        ("TOPPADDING", (0, 0), (-1, -1), 6),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+    ]))
+    elementos.append(tabela_pdf)
+
+    def desenhar_rodape(canvas_pdf, documento_pdf) -> None:
+        canvas_pdf.saveState()
+        canvas_pdf.setStrokeColor(colors.HexColor("#DCE8E1"))
+        canvas_pdf.line(1.2 * cm, 0.8 * cm, landscape(A4)[0] - 1.2 * cm, 0.8 * cm)
+        canvas_pdf.setFont("Helvetica", 8)
+        canvas_pdf.setFillColor(colors.HexColor("#66756E"))
+        canvas_pdf.drawString(1.2 * cm, 0.45 * cm, "Vamos Poupar")
+        canvas_pdf.drawRightString(
+            landscape(A4)[0] - 1.2 * cm,
+            0.45 * cm,
+            f"Página {documento_pdf.page}",
+        )
+        canvas_pdf.restoreState()
+
+    documento.build(elementos, onFirstPage=desenhar_rodape, onLaterPages=desenhar_rodape)
+    return buffer.getvalue()
+
+
 def carregar_dados() -> tuple[pd.DataFrame, pd.DataFrame]:
     mensal = pd.read_csv(ARQUIVO_PAGAMENTOS, encoding="utf-8-sig")
     colunas_obrigatorias = ["Nome", *MESES]
@@ -207,17 +384,52 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-filtro_pessoa = st.selectbox(
-    "Visualizar movimentações de",
-    ["Todos os integrantes"] + nomes,
-    help="Selecione uma pessoa para ver seus aportes e pagamentos.",
-)
+coluna_filtro, coluna_relatorio = st.columns([2, 1], vertical_alignment="bottom")
+with coluna_filtro:
+    filtro_pessoa = st.selectbox(
+        "Visualizar movimentações de",
+        ["Todos os integrantes"] + nomes,
+        help="Selecione uma pessoa para ver seus aportes e pagamentos.",
+    )
 
 df_filtrado = df_long if filtro_pessoa == "Todos os integrantes" else df_long[df_long["Nome"] == filtro_pessoa]
 aporte_por_pessoa = df.assign(Aporte_Total=df[MESES].sum(axis=1))[["Nome", "Aporte_Total"]]
 total_aportado = float(aporte_por_pessoa["Aporte_Total"].sum())
 diferenca_saldo = saldo_atual_mp - total_aportado
 rendimento = max(0.0, diferenca_saldo)
+
+titulo_detalhes = (
+    "Desempenho do grupo"
+    if filtro_pessoa == "Todos os integrantes"
+    else f"Resumo de {filtro_pessoa}"
+)
+tabela = df_filtrado[["Nome", "Mês", "Valor", "Situação"]].copy()
+if filtro_pessoa != "Todos os integrantes":
+    tabela = tabela[["Mês", "Valor", "Situação"]]
+nome_arquivo = (
+    "relatorio-todos-os-integrantes.pdf"
+    if filtro_pessoa == "Todos os integrantes"
+    else f"relatorio-{filtro_pessoa.lower().replace(' ', '-')}.pdf"
+)
+
+with coluna_relatorio:
+    st.download_button(
+        "Baixar relatório em PDF",
+        data=gerar_relatorio_pdf(
+            tabela,
+            titulo_detalhes,
+            total_aportado,
+            saldo_atual_mp,
+            rendimento,
+            semana_atual,
+        ),
+        file_name=nome_arquivo,
+        mime="application/pdf",
+        type="primary",
+        icon=":material/download:",
+        width="stretch",
+        help="Baixa um relatório completo da visualização selecionada.",
+    )
 
 st.markdown('<div class="section-title">Visão geral do grupo</div>', unsafe_allow_html=True)
 st.markdown('<p class="section-copy">Saldo, aportes e andamento do desafio em um só lugar.</p>', unsafe_allow_html=True)
@@ -271,10 +483,8 @@ st.markdown(f'<div class="contribution-grid">{cards_aportes}</div>', unsafe_allo
 
 st.divider()
 if filtro_pessoa == "Todos os integrantes":
-    titulo_detalhes = "Desempenho do grupo"
     subtitulo = "Acompanhe a arrecadação total em cada mês."
 else:
-    titulo_detalhes = f"Resumo de {filtro_pessoa}"
     subtitulo = "Confira os aportes realizados e o que ainda está pendente."
 
 st.markdown(f'<div class="section-title">{titulo_detalhes}</div>', unsafe_allow_html=True)
@@ -316,9 +526,6 @@ with tab_grafico:
     st.plotly_chart(fig, width="stretch", config={"displayModeBar": False})
 
 with tab_pagamentos:
-    tabela = df_filtrado[["Nome", "Mês", "Valor", "Situação"]].copy()
-    if filtro_pessoa != "Todos os integrantes":
-        tabela = tabela[["Mês", "Valor", "Situação"]]
     st.dataframe(
         tabela,
         width="stretch",
